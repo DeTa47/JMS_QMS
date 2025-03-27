@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import implant1 from '../assets/implant1.jpg';
-import dropdown from '../assets/dropdown.svg';
+
 
 export default function AdminDashboard({ classes }) {
     const [expandedArticle, setExpandedArticle] = useState(null);

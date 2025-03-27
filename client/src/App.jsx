@@ -1,4 +1,4 @@
-import AdminDashboard from './pages/adminDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import SeeUser from './pages/SeeUser';
 import menuButton from './assets/menuButton.svg';
 import { useState } from 'react';
