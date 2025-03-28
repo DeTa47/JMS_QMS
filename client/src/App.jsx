@@ -29,7 +29,7 @@ function App() {
           Case Tracking
         </button>
         <button onClick={(e)=>toggleComponent('ums')}>
-          User Tracking
+          Manage Users
         </button>
       </div>
 
