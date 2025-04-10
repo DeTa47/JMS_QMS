@@ -10,8 +10,10 @@ export default function GRN(){
     const [grns, setGrns] = useState([]);
     const [showForm, setShowForm] = useState(false); // State to toggle form visibility
 
+    console.log(import.meta.env.VITE_API_BASE_URL);
+
     useEffect(() => {  
-        axios.get('http://localhost:8080/getallgrn', {})
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/getallgrn`, {})
             .then((response) => {
                 setGrns(response.data); 
                 console.log(grns);

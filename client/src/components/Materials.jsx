@@ -10,7 +10,7 @@ export default function Materials() {
 
 
     useEffect(() => {
-        axios.post('http://localhost:8080/getMaterialSupplier', {}, { timeout: 5000 }) // 5-second timeout
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/getMaterialSupplier`, {}, { timeout: 5000 }) // 5-second timeout
             .then((response) => {
                 setMaterials(response.data);
             })

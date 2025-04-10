@@ -27,7 +27,6 @@ app.use('/', TestSpecificationNameRoute);
 app.use('/', DocumentRoutes);
 
 mysqlPool.query('SELECT 1').then(()=>{
-    
         console.log("Mysql DB Connected");
         app.listen(process.env.PORT, ()=>{console.log(`Server started at port: ${process.env.PORT}`);})
     

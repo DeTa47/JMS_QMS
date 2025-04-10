@@ -29,7 +29,7 @@ export default function GRNMaterials() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.post('http://localhost:8080/getgrn', { grn_id: grn });
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getgrn`, { grn_id: grn });
                 const responseData = response.data;
 
                 const supplier = responseData.materials[0].supplier_name || 'N/A'; // Default to 'N/A' if supplier_name is not available
