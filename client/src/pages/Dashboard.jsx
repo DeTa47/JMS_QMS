@@ -2,7 +2,7 @@ import { useState } from "react";
 import UserDrawer from "../components/UserDrawer";
 import Materials from '../components/Materials';
 import Manufacturing from '../components/Manufacturing';
-import GRN from "./GRN";
+import GRNList from "./GRNList";
 
 export default function Dashboard() {
     const [component, setComponent] = useState('GRN');
@@ -20,7 +20,7 @@ export default function Dashboard() {
             >
                 {
                     component === 'GRN' ?
-                    <GRN /> :
+                    <GRNList /> :
                     component === 'Materials' ?
                     <Materials /> : 
                     component === 'Manufacturing' ? 

@@ -1,9 +1,10 @@
 import {Route, Routes} from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
-import MaterialIIRGRN from './pages/MaterialIIRGRN';
+import MaterialIIR from './pages/MaterialIIR';
 import Materials from './components/Materials';
 import Manufacturing from './components/Manufacturing';
-import GRNMaterials from './pages/GRNMaterials';
+import GRNList from './pages/GRNList';
+import GRN from './pages/GRN';
 
 function App() {
 
@@ -12,9 +13,10 @@ function App() {
         <Route path='/' element={<Dashboard></Dashboard>}>
         </Route>
         <Route path ='/material' element = {<Materials></Materials>}></Route>
-        <Route path='/material-iir' element={<MaterialIIRGRN></MaterialIIRGRN>}></Route>
+        <Route path='/material-iir' element={<MaterialIIR></MaterialIIR>}></Route>
         <Route path ='/manufacturing' element = {<Manufacturing></Manufacturing>}></Route>
-        <Route path ='/grn-materials' element = {<GRNMaterials></GRNMaterials>}></Route>
+        <Route path ='/grn-list' element = {<GRNList></GRNList>}></Route>
+        <Route path ='/grn' element={<GRN></GRN>}></Route>
     </Routes>
   )
 }
