@@ -3,7 +3,7 @@ import UserDrawer from "../components/UserDrawer";
 import Materials from '../components/Materials';
 import Manufacturing from '../components/Manufacturing';
 import GRNList from "./GRNList";
-import MenuButton from "../assets/MenuButton.svg"; // Import MenuButton SVG
+import menuButton from "../assets/menuButton.svg";
 
 export default function Dashboard() {
     const [component, setComponent] = useState('GRN');
@@ -27,7 +27,7 @@ export default function Dashboard() {
                         className="absolute top-4 left-4 p-2 rounded-full shadow-md z-50"
                         aria-label="Toggle Drawer"
                     >
-                        <img src={MenuButton} alt="Menu Button" className="w-6 h-6" />
+                        <img src={menuButton} alt="Menu Button" className="w-6 h-6 hover:cursor-pointer" />
                     </button>
                 )}
 
