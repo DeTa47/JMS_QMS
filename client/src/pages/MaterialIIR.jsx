@@ -37,7 +37,7 @@ export default function MaterialIIRGRN() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.post(`http://localhost:8080/getIIR`, { material_id: material.material_id });
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getMaterialSupplier`, { material_id: material.material_id });
             console.log("Response data:", response.data);
             setData(response.data);
             console.log('Response data:', response.data);

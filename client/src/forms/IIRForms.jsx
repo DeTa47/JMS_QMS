@@ -40,8 +40,8 @@ export default function IIRForms({ setiirform, matid, iirId, setIirData, initial
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const testResponse = await axios.get('http://localhost:8080/getAllTestNames',{headers: {response: 'application/json' }});
-                const specResponse = await axios.get('http://localhost:8080/getAllSpecificationNames', {headers: {response: 'application/json' }});
+                const testResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getAllTestNames`,{headers: {response: 'application/json' }});
+                const specResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getAllSpecificationNames`, {headers: {response: 'application/json' }});
 
                 console.log(testResponse, specResponse);
 
@@ -101,7 +101,7 @@ export default function IIRForms({ setiirform, matid, iirId, setIirData, initial
     const handleSave = async () => {
         try {
             if (mode === "edit") {
-                const response = await axios.patch('http://localhost:8080/updateIIR', {
+                const response = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/updateIIR`, {
                     ...formData,
                     test_id: testid,
                     material_id: matid,
@@ -111,7 +111,7 @@ export default function IIRForms({ setiirform, matid, iirId, setIirData, initial
                 setIirData(prev => prev.map(item => (item.iir_id === initialData.iir_id ? formData : item)));
 
             } else {
-                const response = await axios.post('http://localhost:8080/IIR', {
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/IIR`, {
                     ...formData,
                     material_id: matid,
                     iir_id: iirId,

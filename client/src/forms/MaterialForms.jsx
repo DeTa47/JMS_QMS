@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import BackButton from "../components/BackButton";
 import Modal from "../components/Modal";
 
 export default function MaterialForms({ setmaterialform, setmaterials }) {
@@ -22,7 +21,7 @@ export default function MaterialForms({ setmaterialform, setmaterials }) {
 
     const handleSave = async () => {
         try {
-            await axios.post('http://localhost:8080/createMaterialSupplier', formData);
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/createMaterialSupplier`, formData);
             setmaterials((prev) => [...prev, formData]);
             setmaterialform(false);
         } catch (error) {
@@ -31,7 +30,7 @@ export default function MaterialForms({ setmaterialform, setmaterials }) {
     };
 
     useEffect(() => {
-        axios.post('http://localhost:8080/getsupplier', {})
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/getsupplier`, {})
             .then((response) => setSuppliers(response.data.data))
             .catch((error) => console.error(error));
     }, []);

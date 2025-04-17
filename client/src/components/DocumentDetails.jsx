@@ -7,7 +7,7 @@ export default function DocumentDetails({ type, material_id, iir_id, grn_id }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.post('http://localhost:8080/getDocumentDetails', {
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getDocumentDetails`, {
                     document_type: type,
                     material_id: material_id,
                     iir_id: iir_id,

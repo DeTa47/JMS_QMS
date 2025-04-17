@@ -64,8 +64,8 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
 
     const handleSubmit = () => {
         const url = initialData
-            ? 'http://localhost:8080/updategrn'
-            : 'http://localhost:8080/grn';
+            ? `${import.meta.env.VITE_API_BASE_URL}/updategrn`
+            : `${import.meta.env.VITE_API_BASE_URL}/grn`;
         const method = initialData ? axios.patch : axios.post;
 
         method(url, { grn_id: initialData?.grnDetails.grn_id, grnDetails: formData, materials: grnData })

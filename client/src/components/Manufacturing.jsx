@@ -11,7 +11,7 @@ export default function Manufacturing() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post('http://localhost:8080/manufacturing')
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/manufacturing`)
             .then(response => {
                 console.log('Response Data', response.data);
                 setManufacturingData(response.data);
