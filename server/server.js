@@ -14,7 +14,7 @@ const TestSpecificationNameRoute = require('./routes/TestSpecificationNameRoute'
 const DocumentRoutes = require('./routes/DocumentRoutes');
 
 app.use(morgan('dev'));
-app.use(cors({ origin: ['http://localhost:3002', 'https://jms-qms.onrender.com/'] })); 
+app.use(cors({ origin: ['http://localhost:3002', 'https://jms-qms.onrender.com'] })); 
 app.use(express.json()); 
 
 app.use('/', supplierRoutes);

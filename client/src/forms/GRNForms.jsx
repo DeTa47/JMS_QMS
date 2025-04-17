@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function GRNForms({ fetchdata, grnid, setShowForm, initialData = null }) {
-    console.log("grnid", grnid);
+export default function GRNForms({grnid, fetchdata, setShowForm, initialData = null }) {
+   
     const [formData, setFormData] = useState(
         initialData
             ? {
@@ -208,7 +208,7 @@ export default function GRNForms({ fetchdata, grnid, setShowForm, initialData = 
                             <label className="block font-medium">IIR Number:</label>
                             <input
                                 type="text"
-                                value={material.iir_iid ? material.iir_iid : grnid}
+                                value={material.iir_iid}
                                 onChange={(e) => handleMaterialChange(index, "iir_iid", e.target.value)}
                                 className="border rounded p-2 w-full"
                             />
@@ -217,7 +217,19 @@ export default function GRNForms({ fetchdata, grnid, setShowForm, initialData = 
                 ))}
                 <button
                     type="button"
-                    onClick={() => setGrnData([...grnData, { material_name: "", total_quantity: "", approved_qty: "", rejected_qty: "", iir_id: "" }])}
+                    onClick={() => {
+                        const lastIirId = grnData.length > 0 ? parseInt(grnData[grnData.length - 1].iir_iid || 0, 10) : 0;
+                        setGrnData([
+                            ...grnData,
+                            {
+                                material_name: "",
+                                total_quantity: "",
+                                approved_qty: 0,
+                                rejected_qty: 0,
+                                iir_iid: lastIirId + 1, // Increment the IIR ID
+                            },
+                        ]);
+                    }}
                     className="text-blue-500 hover:underline cursor-pointer"
                 >
                     Add Material

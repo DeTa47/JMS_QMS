@@ -76,9 +76,9 @@ export default function MaterialIIRGRN() {
 
     const addDataForm = () => {
         const relevantData = {
-            checked_by: data[0].checked_by,
-            approved_by: data[0].approved_by,
-            date: data[0].date,
+            checked_by: data[0]?.checked_by,
+            approved_by: data[0]?.approved_by,
+            date: data[0]?.date,
             tests: data.map(item => ({
                 test_id: item.test_id || "",
                 test_name_id: item.test_name_id || "",

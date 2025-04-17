@@ -45,7 +45,7 @@ export default function GRNList(){
                     </>
                 ) : (
                     <div className="absolute inset-0 bg-white p-4 rounded-md shadow-lg">
-                        <GRNForms setShowForm={setShowForm} grnid = {grns[grns.length-1]}/>
+                        <GRNForms setShowForm={setShowForm} grnid = {grns[grns.length-1].iir_ids}/>
                     </div>
                 )}
             </div>

@@ -98,7 +98,7 @@ const createGRN = async (req, res) => {
             const [iirResult] = await connection.execute(query, [iir_id]);
         
             query = `insert into iir_document (iir_id, document_id) values (?, ?)`;
-            const [iirDocumentResult] = await connection.execute(query, [iir_id, document_id]);
+            const [iirDocumentResult] = await connection.execute(query, [iir_id, 2]);
 
             query = 'insert into material_iir (material_id, iir_iid) values (?, ?)';
             const [materialIIRResult] = await connection.execute(query, [matId, iir_id]);
