@@ -179,12 +179,8 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                         </div>
                         <div>
                             <label className="block font-medium">Total Quantity:</label>
-                            <input
-                                type="text"
-                                value={material.rejected_qty + material.approved_qty}
-                                onChange={(e) => handleMaterialChange(index, "total_quantity", e.target.value)}
-                                className="border rounded p-2 w-full"
-                            />
+                            <p>{material.rejected_qty + material.approved_qty}</p> 
+                                
                         </div>
                         <div>
                             <label className="block font-medium">Approved Quantity:</label>

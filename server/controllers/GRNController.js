@@ -220,24 +220,40 @@ const updateGRN = async (req, res) => {
 
         // Update materials
         for (const material of materials) {
-            const updateMaterialQuery = `
-                UPDATE material
-                SET material_name = ?, stock_quantity = ?
-                WHERE material_id = ?
-            `;
-            await connection.execute(updateMaterialQuery, [
-                material.material_name,
-                material.approved_qty,
-                material.material_id,
-            ]);
+            if ('material_id' in material){
+                const updateMaterialQuery = `
+                    UPDATE material
+                    SET material_name = ?, stock_quantity = ?
+                    WHERE material_id = ?
+                `;
+                
+                
+                await connection.execute(updateMaterialQuery, [
+                    material.material_name,
+                    material.approved_qty,
+                    material.material_id,
+                ]); 
+            } else {
+                
+
+                query = 'INSERT INTO material (material_name, stock_quantity) VALUES (?, ?)';
+                const [materialResult] = await connection.execute(query, [material.material_name, material.approved_qty]);
+
+                const matId = materialResult.insertId;
+
+                query = 'INSERT INTO material_grn (material_id, grn_id) VALUES (?, ?)';
+                const [materialGrnResult] = await connection.execute(query, [matId, grn_id]);
+
+                
+            }
 
             const updateMaterialInwardedQuery = `
                 UPDATE material_inwarded
-                SET inward_date = ?, approved_qty = ?, rejected_qty = ?
+                SET approved_qty = ?, rejected_qty = ?
                 WHERE material_id = ?
             `;
+
             await connection.execute(updateMaterialInwardedQuery, [
-                material.inward_date.slice(0,10),
                 material.approved_qty,
                 material.rejected_qty,
                 material.material_id,

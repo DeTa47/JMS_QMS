@@ -44,18 +44,19 @@ const getAllMaterialsAndSuppliers = async (req, res) => {
     try {
         const [rows] = await db.query(`
             SELECT
-                material.material_id, 
-                material.material_name, 
-                material.material_type, 
-                material.material_grade, 
-                material.stock_quantity, 
-                supplier.supplier_name, 
-                supplier.supplier_type, 
-                supplier.active,
-                supplier.location 
-            FROM material
-            JOIN material_supplier ON material.material_id = material_supplier.material_id 
-            JOIN supplier ON material_supplier.supplier_id = supplier.supplier_id
+                m.material_id, 
+                m.material_name, 
+                m.material_type, 
+                m.material_grade, 
+                m.stock_quantity, 
+                s.supplier_name, 
+                s.supplier_type, 
+                s.active,
+                s.location 
+            FROM material m
+            JOIN material_supplier ms ON m.material_id = ms.material_id 
+            JOIN supplier s ON ms.supplier_id = s.supplier_id
+            WHERE m.stock_quantity > 0
         `);
         res.status(200).json(rows);
     } catch (error) {

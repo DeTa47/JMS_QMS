@@ -1,7 +1,7 @@
 import { useState } from "react";
 import UserDrawer from "../components/UserDrawer";
-import Materials from '../components/Materials';
-import Manufacturing from '../components/Manufacturing';
+import Materials from '../pages/Materials';
+import EquipmentLogBooks from './EquipmentLogBooks';
 import GRNList from "./GRNList";
 import menuButton from "../assets/menuButton.svg";
 
@@ -36,7 +36,7 @@ export default function Dashboard() {
                 <div className="p-4 mt-8 h-full overflow-auto">
                     {component === 'GRN' ? <GRNList /> :
                      component === 'Materials' ? <Materials /> : 
-                     component === 'Manufacturing' ? <Manufacturing /> : null}
+                     component === 'EquipmentLogBooks' ? <EquipmentLogBooks /> : null}
                 </div>
             </div>
         </div>

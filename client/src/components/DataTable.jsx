@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function DataTable({ columns, data, actions, route }) {
+export default function DataTable({ columns, data, actions, route, buttonName }) {
     const navigate = useNavigate();
 
     return (
-        <div className="overflow-x-auto mb-6">
+        <div className="overflow-x-auto mx-0.5 mb-6 sm:mx-5 md:mx-10 lg:mx-10 xl:mx-20">
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr className="bg-gray-200">
@@ -37,7 +37,15 @@ export default function DataTable({ columns, data, actions, route }) {
                             ))}
                             {actions && (
                                 <td className="px-4 py-2 text-sm text-gray-700 border-b">
-                                    {actions(row)}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevent row click
+                                            actions(row.log_book_name);
+                                        }}
+                                        
+                                    >
+                                        {buttonName}
+                                    </button>
                                 </td>
                             )}
                         </tr>

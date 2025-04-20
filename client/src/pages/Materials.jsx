@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from "react";
-import AddButton from "./AddButton";
-import DataTable from "./DataTable";
+import AddButton from "../components/AddButton";
+import DataTable from "../components/DataTable";
 import MaterialForms from "../forms/MaterialForms";
 
 export default function Materials() {
