@@ -12,6 +12,7 @@ const MaterialsRoute = require('./routes/MaterialsRoute');
 const ManufacturingRoutes = require('./routes/ManufacturingRoutes');
 const TestSpecificationNameRoute = require('./routes/TestSpecificationNameRoute');
 const DocumentRoutes = require('./routes/DocumentRoutes');
+const LogBookRoutes = require('./routes/LogBookRoutes');
 
 app.use(morgan('dev'));
 app.use(cors({ origin: ['http://localhost:3002', 'https://jms-qms.onrender.com'] })); 
@@ -25,6 +26,7 @@ app.use('/', MaterialsRoute);
 app.use('/', ManufacturingRoutes);
 app.use('/', TestSpecificationNameRoute);
 app.use('/', DocumentRoutes);
+app.use('/', LogBookRoutes);
 
 mysqlPool.query('SELECT 1').then(()=>{
         console.log("Mysql DB Connected");

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { formatDate } from "../utils/stringConversions";
 
 export default function GRNForms({grnid, fetchdata, setShowForm, initialData = null }) {
    
@@ -10,7 +11,7 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                   document_id: 1,
               }
             : {
-                  supplier_bill_number: "",
+                  supplier_batch_number: "",
                   bill_number: "",
                   bill_date: "",
                   purchase_order_number: "",
@@ -53,6 +54,14 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+
+        if ( (name ==="approved_by" && value!=="") && ( value.includes(formData.prepared_by) ) )
+        {
+            setError("Same approval error")
+
+        } else {
+            setError("");
+        } 
     };
 
     const handleMaterialChange = (index, field, value) => {
@@ -63,20 +72,29 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
     };
 
     const handleSubmit = () => {
-        const url = initialData
-            ? `${import.meta.env.VITE_API_BASE_URL}/updategrn`
-            : `${import.meta.env.VITE_API_BASE_URL}/grn`;
-        const method = initialData ? axios.patch : axios.post;
+        if (!error) {
+            const url = initialData
+                ? `${import.meta.env.VITE_API_BASE_URL}/updategrn`
+                : `${import.meta.env.VITE_API_BASE_URL}/grn`;
+            const method = initialData ? axios.patch : axios.post;
 
-        method(url, { grn_id: initialData?.grnDetails.grn_id, grnDetails: formData, materials: grnData })
-            .then(() => {fetchdata(), setShowForm(false)})
+            method(url, { 
+                grn_id: initialData?.grnDetails.grn_id, 
+                grnDetails: { 
+                    ...formData, 
+                    supplier_bill_id: initialData?.grnDetails.supplier_bill_id 
+                }, 
+                materials: grnData 
+            })
+            .then(() => { fetchdata(), setShowForm(false); })
             .catch((err) => console.error(err));
+        }
     };
 
     return (
-        <div className="p-4 bg-white rounded shadow-md">
+        <div className="p-4 bg-white rounded shadow-md max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">GRN Form</h2>
-            <form className="space-y-4">
+            <form className="space-y-4 ">
                 {/* Supplier Details */}
                 <div>
                     <label className="block font-medium">Supplier:</label>
@@ -95,11 +113,11 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                     </select>
                 </div>
                 <div>
-                    <label className="block font-medium">Supplier Bill Number:</label>
+                    <label className="block font-medium">Supplier Batch Number:</label>
                     <input
                         type="text"
-                        name="supplier_bill_number"
-                        value={formData.supplier_bill_number}
+                        name="supplier_batch_number"
+                        value={formData.supplier_batch_number}
                         onChange={handleChange}
                         className="border rounded p-2 w-full"
                     />
@@ -154,6 +172,9 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                         className="border rounded p-2 w-full"
                     />
                 </div>
+                { error && error.includes("Same approval error") && (
+                    <p className="block font-medium text-red-600">Error: Approval cannot be given by the same person as preparer</p>)
+                }
                 <div>
                     <label className="block font-medium">Approved By:</label>
                     <input
@@ -165,7 +186,7 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                     />
                 </div>
 
-                {/* Materials Section */}
+                
                 {grnData.map((material, index) => (
                     <div key={index} className="border p-4 rounded space-y-2 bg-white">
                         <div>
@@ -203,14 +224,17 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                         <div>
                             <label className="block font-medium">IIR Number:</label>
                             <input
-                                type="text"
-                                value={material.iir_iid}
+                                type="number"
+                                increment="1"
+                                value={Number(material.iir_iid)}
                                 onChange={(e) => handleMaterialChange(index, "iir_iid", e.target.value)}
                                 className="border rounded p-2 w-full"
                             />
                         </div>
                     </div>
                 ))}
+                {!initialData &&
+                <>
                 <button
                     type="button"
                     onClick={() => {
@@ -230,6 +254,7 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                 >
                     Add Material
                 </button>
+                
                 <button
                     type="button"
                     onClick={() => grnData.length > 1 && setGrnData(grnData.slice(0, -1))}
@@ -237,8 +262,8 @@ export default function GRNForms({grnid, fetchdata, setShowForm, initialData = n
                 >
                     Remove Material
                 </button>
+                </>}
 
-                {error && <p className="text-red-500">{error}</p>}
                 <div className="flex space-x-4">
                     <button
                         type="button"

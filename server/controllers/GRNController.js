@@ -36,22 +36,24 @@ const getALLGrn = async (req, res) => {
 const createGRN = async (req, res) => {
     const connection = await db.getConnection();
     try {
-        const { grnData } = req.body; 
-        const { supplier_bill_number, bill_number, bill_date, purchase_order_number, purchase_order_date, document_id, prepared_by, approved_by, supplier_id } = req.body;
+        const { materials } = req.body; 
+        const { supplier_batch_number, bill_number, bill_date, purchase_order_number, purchase_order_date, document_id, prepared_by, approved_by, supplier_id } = req.body.grnDetails;
 
-        // Validation check
+       
+        console.log(req.body);
+
         if (
             !bill_number || !bill_date || !purchase_order_number || !purchase_order_date || 
-            !document_id || !prepared_by || !approved_by || !supplier_id || !Array.isArray(grnData) || grnData.length === 0
+            !document_id || !prepared_by || !approved_by || !supplier_id || !Array.isArray(materials) || materials.length === 0
         ) {
             throw new Error('Invalid input: One or more required fields are missing or empty');
         }
 
         await connection.beginTransaction(); 
 
-        let query = `insert into supplier_bills (supplier_bill_number, bill_number, bill_date, purchase_order_number, purchase_order_date) values (?, ?, ?, ?, ?)`;
+        let query = `insert into supplier_bills (supplier_batch_number, bill_number, bill_date, purchase_order_number, purchase_order_date) values (?, ?, ?, ?, ?)`;
 
-        const [insertResult] = await connection.execute(query, [supplier_bill_number, bill_number, bill_date, purchase_order_number, purchase_order_date]);
+        const [insertResult] = await connection.execute(query, [supplier_batch_number, bill_number, bill_date, purchase_order_number, purchase_order_date]);
         const supplier_bill_id = insertResult.insertId;
 
         query = `insert into grn (supplier_bill_id, prepared_by, approved_by) values (?, ?, ?)`;
@@ -62,7 +64,7 @@ const createGRN = async (req, res) => {
         const [grnDocumentResult] = await connection.execute(query, [grn_id, document_id]);
 
 
-        for (let { material_name, inward_date, approved_qty, rejected_qty, iir_id } of grnData) {
+        for (let { material_name, inward_date, approved_qty, rejected_qty, iir_iid } of materials) {
             const approvedQty = parseFloat(approved_qty) || 0.0; // Ensure double data type
             const rejectedQty = parseFloat(rejected_qty) || 0.0; // Ensure double data type
 
@@ -95,13 +97,13 @@ const createGRN = async (req, res) => {
             const [materialSupplierResult] = await connection.execute(query, [supplier_id, matId, supplier_bill_id]);
 
             query = `insert into iir (iir_id) values(?)`;
-            const [iirResult] = await connection.execute(query, [iir_id]);
+            const [iirResult] = await connection.execute(query, [Number(iir_iid)]);
         
             query = `insert into iir_document (iir_id, document_id) values (?, ?)`;
-            const [iirDocumentResult] = await connection.execute(query, [iir_id, 2]);
+            const [iirDocumentResult] = await connection.execute(query, [Number(iir_iid), 2]);
 
             query = 'insert into material_iir (material_id, iir_iid) values (?, ?)';
-            const [materialIIRResult] = await connection.execute(query, [matId, iir_id]);
+            const [materialIIRResult] = await connection.execute(query, [matId, Number(iir_iid)]);
 
         }
 
@@ -125,7 +127,7 @@ const getGRN = async (req, res) => {
         await connection.beginTransaction();
 
         const queryGRN = `
-            SELECT g.*, sb.supplier_bill_number, sb.bill_number, sb.bill_date, sb.purchase_order_number, sb.purchase_order_date
+            SELECT g.*, sb.supplier_batch_number, sb.bill_number, sb.bill_date, sb.purchase_order_number, sb.purchase_order_date
             FROM grn g
             LEFT JOIN supplier_bills sb ON g.supplier_bill_id = sb.supplier_bill_id
             WHERE g.grn_id = ?
@@ -205,12 +207,12 @@ const updateGRN = async (req, res) => {
         // Update supplier bill details
         const updateSupplierBillQuery = `
             UPDATE supplier_bills
-            SET supplier_bill_number = ?, bill_number = ?, bill_date = ?, 
+            SET supplier_batch_number = ?, bill_number = ?, bill_date = ?, 
                 purchase_order_number = ?, purchase_order_date = ?
             WHERE supplier_bill_id = ?
         `;
         await connection.execute(updateSupplierBillQuery, [
-            grnDetails.supplier_bill_number,
+            grnDetails.supplier_batch_number,
             grnDetails.bill_number,
             grnDetails.bill_date.slice(0,10),
             grnDetails.purchase_order_number,

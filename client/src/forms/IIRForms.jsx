@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function IIRForms({ setiirform, matid, iirId, setIirData, initialData, mode, testid, fetchdata }) {
+export default function IIRForms({ setiirform, matid, iirId, setIirData, initialData, mode, testid, fetchdata}) {
 
+    console.log("Mode", mode);
 
     const [formData, setFormData] = useState(
         initialData || {
@@ -219,20 +220,22 @@ export default function IIRForms({ setiirform, matid, iirId, setIirData, initial
                                     </div>
                                 </div>
                             ))}
-                            <button
-                                type="button"
-                                onClick={addTest}
-                                className="text-blue-500 hover:underline cursor-pointer"
-                            >
-                                Add Test
-                            </button>
-                            <button
-                                type="button"
-                                onClick={removeTest}
-                                className="text-red-500 hover:underline cursor-pointer ml-4"
-                            >
-                                Remove Test
-                            </button>
+                            
+                                    <button
+                                        type="button"
+                                        onClick={addTest}
+                                        className="text-blue-500 hover:underline cursor-pointer"
+                                    >
+                                        Add Test
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={removeTest}
+                                        className="text-red-500 hover:underline cursor-pointer ml-4"
+                                    >
+                                        Remove Test
+                                    </button>
+                               
                         </div>
                         <div className="flex space-x-4 mt-4">
                             <button

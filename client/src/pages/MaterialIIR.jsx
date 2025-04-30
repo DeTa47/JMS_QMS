@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import DataTable from '../components/DataTable';
 import IIRForms from '../forms/IIRForms';
+import IIRSemiFinishForm from '../forms/IIRSemiFinishForm';
 import Modal from '../components/Modal';
 import axios from 'axios';
 import { formatDate } from '../utils/stringConversions';
@@ -17,8 +18,14 @@ export default function MaterialIIRGRN() {
     const [material, setMaterial] = useState(Array.isArray(stateArray)?stateArray?.[0] : state?.stateData.materialid);
     const [grnDetails, setGrnDetails] = useState(stateArray?.[1] || null);
 
-    console.log("Material:", material);
-    console.log("GRN Details:", grnDetails);
+    const [selectedComponent, setSelectedComponent] = useState('IIR');
+    const [data, setData] = useState([]);
+    const [showForm, setShowForm] = useState(false);
+    const [formType, setFormType] = useState(null);
+    //const [selectedRow, setSelectedRow] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [additionalData, setAdditionalData] = useState([]);
+    const [selectOption, setSelectOption] = useState("Normal");
 
     useEffect(() => {
         if (!material || !grnDetails) {
@@ -28,51 +35,64 @@ export default function MaterialIIRGRN() {
         }
     }, [material, grnDetails, navigate]);
 
-    const [selectedComponent, setSelectedComponent] = useState('IIR');
-    const [data, setData] = useState([]);
-    const [showForm, setShowForm] = useState(false);
-    const [formType, setFormType] = useState(null);
-    //const [selectedRow, setSelectedRow] = useState(null);
-    const [isEditMode, setIsEditMode] = useState(false);
-
     const fetchData = async () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getIIR`, { material_id: material.material_id });
             console.log("Response data:", response.data);
             setData(response.data);
-            console.log('Response data:', response.data);
+
+            // Extract additionalData if present
+            if (response.data[1]?.additionalData) {
+                setAdditionalData(response.data[1].additionalData);
+            } else {
+                setAdditionalData([]);
+            }
         } catch (error) {
             console.error(`Error fetching ${selectedComponent} data:`, error);
         }
     };
-    
 
     useEffect(() => {
         fetchData();
         
     }, [material?.material_id]);
 
-    const columns = selectedComponent === 'IIR'
-        ? [
-            {label: 'IIR Number', key: 'iir_id'},
-            { label: 'Test', key: 'test_name' },
-            { label: 'Specification', key: 'specification_name' },
-            { label: 'Checked By', key: 'checked_by' },
-            { label: 'Approved By', key: 'approved_by' },
-            { label: 'Observation 1', key: 'observation_1', type: 'checkbox' },
-            { label: 'Observation 2', key: 'observation_2', type: 'checkbox' },
-            { label: 'Observation 3', key: 'observation_3', type: 'checkbox' },
-            { label: 'Observation 4', key: 'observation_4', type: 'checkbox' },
-            { label: 'Observation 5', key: 'observation_5', type: 'checkbox' },
-            { label: 'Observation 6', key: 'observation_6', type: 'checkbox' },
-            
-        ]
-        : [
-            // { label: 'Inward Date', key: 'inward_date' },
-            // { label: 'Approved Quantity', key: 'approved_qty' },
-            // { label: 'Rejected Quantity', key: 'rejected_qty' },
-            // { label: 'Inwarded By', key: 'inwarded_by' },
-        ];
+    
+    const additionalColumns = data[0]?.iir_type === "semi-finish" ? [
+        {   label: 'Test Name', key: 'test_name'},
+        {   label: 'Specification Name', key: 'specification_name' }
+    ] : []
+
+    const columns = data[0]?.iir_type === "semi-finish" ? [
+        { label: 'IIR Number', key: 'iir_id' },
+        { label: 'Specifications', key: 'specifications' },
+        { label: 'Characteristics', key: 'characteristics' },
+        { label: 'LSL', key: 'LSL' },
+        { label: 'USL', key: 'USL' },
+        { label: 'Instrument ID', key: 'instrument_id' },
+        { label: 'Observation 1', key: 'observation_1', type: 'checkbox' },
+        { label: 'Observation 2', key: 'observation_2', type: 'checkbox' },
+        { label: 'Observation 3', key: 'observation_3', type: 'checkbox' },
+        { label: 'Observation 4', key: 'observation_4', type: 'checkbox' },
+        { label: 'Observation 5', key: 'observation_5', type: 'checkbox' },
+        { label: 'Remarks', key: 'remarks' },
+    ] 
+    
+    : [
+        { label: 'IIR Number', key: 'iir_id' },
+        { label: 'Test', key: 'test_name' },
+        { label: 'Specification', key: 'specification_name' },
+        { label: 'Checked By', key: 'checked_by' },
+        { label: 'Approved By', key: 'approved_by' },
+        { label: 'Observation 1', key: 'observation_1', type: 'checkbox' },
+        { label: 'Observation 2', key: 'observation_2', type: 'checkbox' },
+        { label: 'Observation 3', key: 'observation_3', type: 'checkbox' },
+        { label: 'Observation 4', key: 'observation_4', type: 'checkbox' },
+        { label: 'Observation 5', key: 'observation_5', type: 'checkbox' },
+        { label: 'Observation 6', key: 'observation_6', type: 'checkbox' },
+    ];
+
+    const filteredData = data.filter((item) => !item.additionalData);
 
     const addDataForm = () => {
         const relevantData = {
@@ -98,16 +118,27 @@ export default function MaterialIIRGRN() {
 
         setFormType(
             <Modal>
-                <IIRForms 
-                    setiirform={setShowForm} 
-                    matid={material?.material_id} 
-                    iirId={data[0]?.iir_id || null} 
-                    setIirData={setData} 
-                    mode={isEditMode ? "edit" : "add"}
-                    initialData={relevantData}
-                    test_id={data[0]?.test_id || ""}
-                    fetchdata={fetchData}
-                /> 
+                {selectOption === "semi-finish" ? (
+                    <IIRSemiFinishForm
+                        setiirform={setShowForm}
+                        matid={material?.material_id}
+                        iirId={data[0]?.iir_id || null}
+                        setIirData={setData}
+                        mode={isEditMode ? "edit" : "add"}
+                        initialData={relevantData}
+                        fetchdata={fetchData}
+                    />
+                ) : (
+                    <IIRForms
+                        setiirform={setShowForm}
+                        matid={material?.material_id}
+                        iirId={data[0]?.iir_id || null}
+                        setIirData={setData}
+                        mode={isEditMode ? "edit" : "add"}
+                        initialData={relevantData}
+                        fetchdata={fetchData}
+                    />
+                )}
             </Modal>
         );
         setShowForm(true);
@@ -134,7 +165,7 @@ export default function MaterialIIRGRN() {
                             <strong>Supplier Name:</strong> {data[0]?.supplier_name || 'N/A'}
                         </li>
                         <li className="text-sm">
-                            <strong>Supplier Bill Number:</strong> {data[0]?.supplier_bill_number || 'N/A'}
+                            <strong>Supplier Batch Number:</strong> {data[0]?.supplier_batch_number || 'N/A'}
                         </li>
                         <li className="text-sm">
                             <strong>Challan/Bill Number:</strong> {data[0]?.bill_number || 'N/A'}
@@ -178,29 +209,59 @@ export default function MaterialIIRGRN() {
                 </div>
             </div> 
 
-            {/* Materials Table */}
-            <div className="mt-12 max-h-full overflow-auto">
-                <DataTable
-                    columns={columns}
-                    data={data}
-                    // actions={(row) => (
-                    //     <button
-                    //         onClick={() => {
-                    //             setSelectedRow(row);
-                    //             setIsEditMode(true);
-                    //             addDataForm(); 
-                    //         }}
-                    //         className="text-blue-500 hover:underline cursor-pointer"
-                    //     >
-                    //         Edit
-                    //     </button>
-                    // )}
-                />
-            </div>
+            {data.length === 0?
+                <div className="mb-4 bg-white rounded-md shadow-lg max-w-xs p-2">
+                    <label htmlFor="selectOption" className="block text-sm font-medium text-gray-700 ">
+                        Select IIR Type:
+                    </label>
+                    <select
+                        id="selectOption"
+                        value={selectOption}
+                        onChange={(e) => setSelectOption(e.target.value)}
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base  p-2 border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                    >
+                        <option value="Normal">Normal</option>
+                        <option value="semi-finish">Semi-Finish</option>
+                    </select>
+                </div>: null}
+
+            {
+                data.length>0 && (data[0]?.iir_type === "semi-finish" && additionalData.length > 0) ? (
+                    <div className="mt-12 max-h-full max-w-full">
+                        <DataTable 
+                            columns={additionalColumns}
+                            data={additionalData}
+                        />
+                    </div>
+                ) : null
+            }
+
+            {data.length>0 &&
+                <div className="mt-12 max-h-full max-w-full">
+                    <DataTable
+                        columns={columns}
+                        data={data[0]?.iir_type === "semi-finish" ? filteredData : data}
+                        // actions={(row) => (
+                        //     <button
+                        //         onClick={() => {
+                        //             setSelectedRow(row);
+                        //             setIsEditMode(true);
+                        //             addDataForm(); 
+                        //         }}
+                        //         className="text-blue-500 hover:underline cursor-pointer"
+                        //     >
+                        //         Edit
+                        //     </button>
+                        // )}
+                    />
+                </div>
+            }
+
+
 
             {/* Add Button */}
             <div className="fixed bottom-6 right-6">
-                {data.some(item => item.iir_id && item.test_name && item.specification_name) ? (
+                {data.some(item => item.iir_id) ? (
                     <button
                         onClick={() => {
                             setIsEditMode(true);

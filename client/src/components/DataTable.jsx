@@ -5,7 +5,7 @@ export default function DataTable({ columns, data, actions, route, buttonName })
     const navigate = useNavigate();
 
     return (
-        <div className="overflow-x-auto mx-0.5 mb-6 sm:mx-5 md:mx-10 lg:mx-10 xl:mx-20">
+        <div className="overflow-x-scroll mx-0.5 mb-6 sm:mx-5 md:mx-10 lg:mx-10 xl:mx-20">
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr className="bg-gray-200">

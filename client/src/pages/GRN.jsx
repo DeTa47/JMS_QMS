@@ -77,7 +77,7 @@ export default function GRN() {
                             <strong>Supplier:</strong> {grnDetails.supplier}
                         </li>
                         <li className="text-sm">
-                            <strong>Supplier Bill Number:</strong> {grnDetails.supplier_bill_number}
+                            <strong>Supplier Batch Number:</strong> {grnDetails.supplier_batch_number}
                         </li>
                         <li className="text-sm">
                             <strong>Challan/Bill Number:</strong> {grnDetails.bill_number}
