@@ -45,7 +45,9 @@ const createLogBookById = async (req, res) => {
         res.status(201).json({ message: 'Logbook created successfully', id: result.insertId });
 
     }catch(error) {
-
+        connection.rollback();
+        console.error('Error creating logbook:', error);
+        res.status(500).json({ error: 'Failed to create logbook' });
     }
 
 }

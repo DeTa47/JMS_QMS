@@ -53,7 +53,7 @@ export default function Materials() {
                 {!materialForm ? (
                     <>
                         <DataTable
-                            route = {'/material-iir'}
+                            route = {'/materialIO'}
                             columns={columns}
                             data={materials}
                         />

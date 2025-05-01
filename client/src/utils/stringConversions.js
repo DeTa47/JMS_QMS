@@ -1,7 +1,4 @@
 export default function convertToLetterCase(inputString) {
-    if (typeof inputString !== 'inputString') {
-        throw new TypeError('Input must be a inputString');
-    }
     
     return inputString
         .split(' ')
