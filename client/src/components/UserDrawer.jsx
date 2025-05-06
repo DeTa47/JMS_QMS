@@ -19,11 +19,7 @@ export default function UserDrawer({ setcomponent, onToggle, isOpen }) {
     }, [onToggle]);
 
     return (
-        <div
-            aria-label="Sidebar"
-            className={`fixed top-0 left-0 h-full bg-gray-100 border-r border-gray-300 shadow-lg transform transition-transform duration-300 z-40 ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+        <div aria-label="Sidebar" className={`fixed top-0 left-0 h-full bg-gray-100 border-r border-gray-300 shadow-lg transform transition-transform duration-300 z-40 ${ isOpen ? "translate-x-0" : "-translate-x-full" }`}
             style={{ width: "250px" }}
         >
             {/* Close Button */}
@@ -59,7 +55,7 @@ export default function UserDrawer({ setcomponent, onToggle, isOpen }) {
                     <div className="flex flex-col items-center mt-10 space-y-4">
                         <button onClick={() => setcomponent('GRN')} className="text-gray-700 hover:cursor-pointer">GRN</button>
                         <button onClick={() => setcomponent('Materials')} className="text-gray-700 hover:cursor-pointer">Materials</button>
-                        <button onClick={()=> setShowManufacturingList(!ManufacturingList)}  className='text-gray-700 flex flex-col items-center hover:cursor-pointer transform-flat'>
+                        <div onClick={()=> setShowManufacturingList(!ManufacturingList)}  className='text-gray-700 flex flex-col items-center hover:cursor-pointer transform-flat'>
                             <div flex className='flex flex-row items-center gap-1'>
                                 <IoIosArrowForward className={`text-gray-700 ${ManufacturingList ? 'rotate-90' : ''}`} />
                                 Manufacturing 
@@ -71,7 +67,7 @@ export default function UserDrawer({ setcomponent, onToggle, isOpen }) {
                                 
                             }
                             
-                        </button>
+                        </div>
                     </div>
                 </>
             )}

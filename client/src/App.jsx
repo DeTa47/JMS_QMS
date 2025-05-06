@@ -4,6 +4,8 @@ import MaterialIIR from './pages/MaterialIIR';
 import Materials from './pages/Materials';
 import MaterialIOList from './pages/MaterialIOList';
 import EquipmentLogBooks from './pages/EquipmentLogBooks';
+import MonthlyLogBook from './pages/MonthlyLogBook';
+import LogBookData from './pages/LogBookData';
 import GRNList from './pages/GRNList';
 import GRN from './pages/GRN';
 
@@ -19,6 +21,8 @@ function App() {
         <Route path ='/EquipmentLogBooks' element = {<EquipmentLogBooks></EquipmentLogBooks>}></Route>
         <Route path ='/grn-list' element = {<GRNList></GRNList>}></Route>
         <Route path ='/grn' element={<GRN></GRN>}></Route>
+        <Route path ='/monthlylogbooks' element={<MonthlyLogBook></MonthlyLogBook>}></Route>
+        <Route path ='/logbookdata' element={<LogBookData></LogBookData>}></Route>
     </Routes>
   )
 }

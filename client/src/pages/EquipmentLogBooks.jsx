@@ -3,33 +3,44 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { IoArchive } from "react-icons/io5";
 import DataTable from '../components/DataTable';
+import { Button, Table, Input, FloatButton, Modal } from 'antd';
+import {FaPlus} from 'react-icons/fa';
+import LogBookForm from '../forms/LogBookForm';
 
 export default function EquipmentLogBooks() {
     const [activeTab, setActiveTab] = useState('Tab1');
-    const [logBooks, setLogBooks] = useState([{
-        log_book_name:'JMS 001 DRUM POLISH MACHINE'}
-    ]);
-    const [archivedLogBooks, setArchivedLogBooks] = useState([
-        {
-            log_book_name:'JMS 001 frozen mighty 4k' 
-        },
-        {
-            log_book_name:'JMS 002 frozen mighty 4k' 
-        }
-    ]);
+    const [logBooks, setLogBooks] = useState([]);
+    const [archivedLogBooks, setArchivedLogBooks] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchLogBooks = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getlogbooks`);
+                console.log('Log books response:', response.data);
+                setLogBooks(response.data);
+                console.log('Log books:', logBooks);
+            } catch (error) {
+                console.error('Error fetching log books:', error);
+            }
+        };
+        fetchLogBooks();
+    }, []);
+  
 
     let logbookcolumns = [
         {
-            label: 'Log books',
-            key: 'log_book_name'
+            key: 'title',
+            title: 'Title',
+            dataIndex: 'title',
         }
+        
     ];
 
     let archivedLogBookscolumns = [
-        {
-            label: 'Archived Log books',
-            key: 'log_book_name'
-        }
+        
     ];
 
     const archiveLogBook = (value) => {
@@ -65,29 +76,44 @@ export default function EquipmentLogBooks() {
                 <div className="p-4 bg-neutral-50 h-full">
                     {activeTab === 'Tab1' && (
                         <div>
-                            <DataTable
-                                route={'/equipment-log-books'}
+                            <Table
                                 columns={logbookcolumns}
-                                data={logBooks}
-                                actions={archiveLogBook}
-                                buttonName={<IoArchive className="hover:cursor-pointer hover: text-green-400 h-7 w-8" />}
+                                dataSource={logBooks}  
+                                rowClassName={() => 'hover-row cursor-pointer'}
+                                onRow={(record) => ({
+                                    onClick: () => {
+                                        console.log('Row clicked:', record);
+                                        navigate('/monthlylogbooks', {state: record});
+                                    },
+                                })}
+                                width={1000}
                             />
                         </div>
                     )}
                     {activeTab === 'Tab2' && (
                         <div>
                             
-                            <DataTable
-                                route={'/equipment-log-books'}
-                                columns={archivedLogBookscolumns}
-                                data={archivedLogBooks}
-                                  
-                            />
+                            <Table>
+
+                            </Table>
                         
                         </div>
-                    )}
+                    )}  
                 </div>
+                <FloatButton onClick={()=>setIsModalOpen(true)} icon={<FaPlus/>} shape='circle' type='primary' tooltip={<p className='text-white'>Add Logbook</p>}/>
+                <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} width={1000}>
+                    <LogBookForm />
+                </Modal>
+
             </div>
+            <style>
+            {`
+                .hover-row:hover {
+                    background-color: #f5f5f5; /* Light gray background on hover */
+                    cursor: pointer;
+                }
+            `}
+            </style>
         </div>
     );
 }

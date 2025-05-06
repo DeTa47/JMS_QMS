@@ -40,7 +40,9 @@ const createMaterialIO = async (req, res) => {
         await connection.rollback();
         console.error('Error creating Material IO:', error);
         res.status(500).json({ error: 'Failed to create Material IO', err: error });
-    }   
+    } finally {
+        connection.release();
+    }
 }
 
 const updateMaterialIO = async (req, res) => {
@@ -82,6 +84,10 @@ const updateMaterialIO = async (req, res) => {
         await connection.rollback();
         console.error('Error updating Material IO:', error);
         res.status(500).json({ error: 'Failed to update Material IO', err: error });
+    }
+
+    finally{
+        connection.release();
     }
 }
 
