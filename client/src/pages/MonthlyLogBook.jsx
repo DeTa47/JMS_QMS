@@ -61,11 +61,8 @@ export default function MonthlyLogBook() {
                 rowClassName={() => 'hover-row cursor-pointer'}  
                 onRow={(record) => ({
                     onClick: () => {
+                        navigate('/logbookdata', {state: {logbookid: logbookid, logbookmid: record.logbookmid}});
                         console.log('Row clicked:', record);
-                        axios.post(`${import.meta.env.VITE_API_BASE_URL}/getlogbookdata`, {logbookmid: record.logbookmid, logbookid: logbookid}).then((response) => {
-                            console.log('Logbook data:', response.data);
-                            navigate('/logbookdata', {state: {logbookdata: response.data, logbookmid: record.logbookmid}});
-                        })
                     }})}>
             </Table>
             <FloatButton onClick={()=>{setIsModalOpen(true)}} type="primary" shape="circle" icon={ <FaPlus/> }></FloatButton>

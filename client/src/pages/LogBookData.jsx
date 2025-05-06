@@ -8,27 +8,38 @@ import LogBookDataForm from '../forms/LogBookDataForm';
 
 export default function LogBookData() {
     const { state } = useLocation();
-    const { logbookdata, logbookmid } = state;
+    const { logbookid, logbookmid } = state;
 
-    console.log('Logbook data:', logbookdata);
+    
     console.log('Logbook mid:', logbookmid);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [columns, setColumns] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [fields, setFields] = useState([]);
+    const [editMode, setEditMode] = useState(false);
+    const [editData, setEditData] = useState(null);
 
-    const handleModalClose = () => {
-        message.success('Modal closed successfully');
-        setIsModalOpen(false);
+    const openModalInEditMode = () => {
+        setEditMode(true);
+        const initialData = dataSource.map(row => ({
+            case_id: row.case_id,
+            fields: fields.map(field => ({
+                field_id: field.log_book_field_id,
+                value: row[field.log_book_field] || '',
+                logbookmid: logbookmid,
+            }))
+        }));
+        setEditData(initialData);
+        setIsModalOpen(true);
     };
 
-    useEffect(() => {
-        if (logbookdata) {
-            const { fields, logbookfields } = logbookdata;
+    const fetchData = async () => {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getlogbookdata`, {logbookmid:logbookmid, logbookid: logbookid})
+            
+            const { fields, logbookfields } = response.data;
 
             setFields(logbookfields);
-            // Create columns dynamically
             const dynamicColumns = [
                 {
                     title: 'Case ID',
@@ -42,7 +53,7 @@ export default function LogBookData() {
             ];
             setColumns(dynamicColumns);
 
-            // Create rows dynamically
+            
             const groupedData = fields.reduce((acc, item) => {
                 const existingRow = acc.find(row => row.case_id === item.case_id);
                 if (existingRow) {
@@ -59,7 +70,19 @@ export default function LogBookData() {
             setDataSource(groupedData);
             console.log('Data source: ', groupedData); // Corrected logging
         }
-    }, [logbookdata]);
+    
+
+    const handleModalClose = () => {
+        message.success('Data saved successfully');
+        setIsModalOpen(false);
+        fetchData();
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }
+    , [logbookid]);
 
     return (
         <div className="mt-3 ml-3">
@@ -70,14 +93,23 @@ export default function LogBookData() {
                 rowKey="case_id"
                 bordered
             />
-            <FloatButton onClick={() => setIsModalOpen(true)} icon={<FaPlus />} type="primary" shape='circle' tooltip={<p>Add values</p>} />
+            <FloatButton.Group>
+                <FloatButton onClick={() => setIsModalOpen(true)} icon={<FaPlus />} type="primary" shape='circle' tooltip={<p>Add values</p>} />
+                <FloatButton onClick={() => openModalInEditMode()} icon={<AiOutlineEdit />} type="primary" shape='circle' tooltip={<p>Edit values</p>} />
+            </FloatButton.Group>
             <Modal 
                 open={isModalOpen} 
                 onCancel={() => setIsModalOpen(false)} // Fixed infinite re-render issue
                 footer={null} 
                 width={1000}
             >
-                <LogBookDataForm handlemodalclose={handleModalClose} fields={logbookdata.logbookfields} logbookmid={logbookmid}></LogBookDataForm>
+                <LogBookDataForm 
+                    handlemodalclose={handleModalClose} 
+                    fields={fields} 
+                    logbookmid={logbookmid} 
+                    editMode={editMode} 
+                    initialData={editData}
+                />
             </Modal>
         </div>
     );

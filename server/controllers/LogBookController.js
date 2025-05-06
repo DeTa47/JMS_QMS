@@ -59,6 +59,36 @@ const getLogbookdata = async (req, res) => {
 }
 
 
+const updateValues = async (req, res) => {
+    const { fields } = req.body;
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        for (let field of fields) {
+            let case_id = field.case_id;
+            let fields = field.fields;
+
+            console.log('Fields:', field);
+
+            for (let field of fields) {
+                const updateQuery = 'UPDATE logbook_field_values SET logbook_values = ? WHERE log_book_field_id = ? AND case_id = ? AND log_book_monthly_id = ?';
+                await connection.query(updateQuery, [field.value, field.field_id, case_id, field.logbookmid]);
+            }
+        }
+
+        await connection.commit();
+        res.status(200).json({ message: 'Logbook updated successfully' });
+    } catch (error) {
+        await connection.rollback();
+        console.error('Error updating logbook:', error);
+        res.status(500).json({ error: 'Failed to update logbook' });
+    } finally {
+        connection.release();
+    }
+}
+
 const insertValues = async (req, res) => {
     const {fields} = req.body;
     const connection = await db.getConnection();
@@ -75,7 +105,7 @@ const insertValues = async (req, res) => {
             for (let field of fields) {
 
                 const insertQuery = 'INSERT INTO logbook_field_values (logbook_values, log_book_field_id, case_id, log_book_monthly_id) VALUES (?, ?, ?, ?)';
-                await connection.query(insertQuery, [field.value, field.fieldid, case_id, field.logbookmid ]);
+                await connection.query(insertQuery, [field.value, field.field_id, case_id, field.logbookmid ]);
             }
         }
         
@@ -152,4 +182,4 @@ const createLogBook = async (req, res) => {
     }
 };
 
- module.exports = { getLogbooks, createLogBook, createLogBookById, insertValues, getMonthlyLogbooks, getLogbookdata };
+ module.exports = { getLogbooks, createLogBook, createLogBookById, insertValues, getMonthlyLogbooks, getLogbookdata, updateValues };

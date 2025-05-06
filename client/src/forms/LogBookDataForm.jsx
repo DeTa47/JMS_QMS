@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Input } from 'antd';
 import axios from 'axios';
 
-export default function LogBookDataForm({ handlemodalclose, setIsEdit, fields, logbookmid }) 
+export default function LogBookDataForm({ handlemodalclose, setIsEdit, fields, logbookmid, editMode, initialData }) 
 {
+    const [formData, setFormData] = useState(editMode && initialData ? initialData : [{
+        case_id: '',
+        fields: (fields || []).map(field => ({
+            field_id: field.log_book_field_id,
+            value: '',
+            logbookmid: logbookmid,
+        }))
+    }]);
 
-    const [formData, setFormData] = useState([{ case_id: '', fields: [] }]);
-
-   
     const handleAddGroup = () => {
         setFormData([
             ...formData,
@@ -44,22 +49,22 @@ export default function LogBookDataForm({ handlemodalclose, setIsEdit, fields, l
     };
 
     const handleSubmit = async (e) => {
-        try{
+        try {
             e.preventDefault();
-            console.log('Submission Data',formData);
-            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/insertvalues`, { fields: formData })
-            console.log('Logbook data submitted successfully:', response.data);
+            console.log('Submission Data', formData);
+            if (editMode) {
+                const response = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/updatevalues`, { fields: formData });
+                console.log('Logbook data updated successfully:', response.data);
+            } else {
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/insertvalues`, { fields: formData });
+                console.log('Logbook data submitted successfully:', response.data);
+            }
             handlemodalclose();
-            
-         }catch (error) {
+        } catch (error) {
             console.error('Error submitting logbook data:', error);
-            alert('Error submitting logbook data'); 
+            alert('Error submitting logbook data');
         }
-
     };
-
-        
-    
 
     return (
         <div>
@@ -91,20 +96,23 @@ export default function LogBookDataForm({ handlemodalclose, setIsEdit, fields, l
                                 />
                             </div>
                         ))}
-                        <button
-                            type="button"
-                            className="m-2 text-blue-600 hover:underline cursor-pointer"
-                            onClick={handleAddGroup}
-                        >
-                            Add Field
-                        </button>
-                        <button
-                            type="button"
-                            className="m-2 text-red-600 hover:underline cursor-pointer"
-                            onClick={() => handleRemoveGroup(groupIndex)}
-                        >
-                            Remove Field
-                        </button>
+                        {!editMode &&(
+                            <button
+                                type="button"
+                                className="m-2 text-blue-600 hover:underline cursor-pointer"
+                                onClick={handleAddGroup}
+                            >
+                                Add Field
+                            </button>)}
+                        {(groupIndex !== 0 && !editMode) && (
+                            <button
+                                type="button"
+                                className="m-2 text-red-600 hover:underline cursor-pointer"
+                                onClick={() => handleRemoveGroup(groupIndex)}
+                            >
+                                Remove Field
+                            </button>
+                        )}
                     </div>
                 ))}
                 
