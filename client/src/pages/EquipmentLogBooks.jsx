@@ -20,7 +20,8 @@ export default function EquipmentLogBooks() {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getlogbooks`);
                 console.log('Log books response:', response.data);
-                setLogBooks(response.data);
+                setLogBooks(response.data.filter((logBook) => logBook.status !== "obsolete"));
+                setArchivedLogBooks(response.data.filter((logBook) => logBook.status === "obsolete"));
                 console.log('Log books:', logBooks);
             } catch (error) {
                 console.error('Error fetching log books:', error);
@@ -35,17 +36,36 @@ export default function EquipmentLogBooks() {
             key: 'title',
             title: 'Title',
             dataIndex: 'title',
-        }
-        
+        },
+        {
+            key: 'action',
+            title: 'Actions',
+            render: (text, record) => (
+                <Button
+                    type="link"
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click
+                        archiveLogBook(record);
+                    }}
+                >
+                    Archive
+                </Button>
+            ),
+        },
     ];
 
     let archivedLogBookscolumns = [
-        
+        {
+            key: 'title',
+            title: 'Title',
+            dataIndex: 'title',
+        }
     ];
 
-    const archiveLogBook = (value) => {
-        setLogBooks(logBooks.filter((logBook) => logBook.log_book_name !== value));
-        setArchivedLogBooks([...archivedLogBooks, { log_book_name: value }]);
+    const archiveLogBook = async (value) => {
+        setLogBooks(logBooks.filter((logBook) => logBook.title !== value.title));
+        setArchivedLogBooks([...archivedLogBooks, { title: value.title }]);
+        const response = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/archivelogbook`, { logbookid: value.logbookid  });
     }
 
     const handleTabClick = (tab) => {
@@ -70,7 +90,7 @@ export default function EquipmentLogBooks() {
                         } hover:cursor-pointer`}
                         onClick={() => handleTabClick('Tab2')}
                     >
-                       Archived log books
+                       Obsolete log books
                     </button>
                 </div>
                 <div className="p-4 bg-neutral-50 h-full">
@@ -93,9 +113,19 @@ export default function EquipmentLogBooks() {
                     {activeTab === 'Tab2' && (
                         <div>
                             
-                            <Table>
 
-                            </Table>
+                            <Table
+                                columns={archivedLogBookscolumns}
+                                dataSource={archivedLogBooks}  
+                                rowClassName={() => 'hover-row cursor-pointer'}
+                                onRow={(record) => ({
+                                    onClick: () => {
+                                        console.log('Row clicked:', record);
+                                        navigate('/monthlylogbooks', {state: record});
+                                    },
+                                })}
+                                width={1000}
+                            />
                         
                         </div>
                     )}  

@@ -8,7 +8,7 @@ import LogBookDataForm from '../forms/LogBookDataForm';
 
 export default function LogBookData() {
     const { state } = useLocation();
-    const { logbookid, logbookmid } = state;
+    const { logbookid, logbookmid, status } = state;
 
     
     console.log('Logbook mid:', logbookmid);
@@ -93,10 +93,12 @@ export default function LogBookData() {
                 rowKey="case_id"
                 bordered
             />
-            <FloatButton.Group>
-                <FloatButton onClick={() => setIsModalOpen(true)} icon={<FaPlus />} type="primary" shape='circle' tooltip={<p>Add values</p>} />
-                <FloatButton onClick={() => openModalInEditMode()} icon={<AiOutlineEdit />} type="primary" shape='circle' tooltip={<p>Edit values</p>} />
-            </FloatButton.Group>
+            {status !== "obsolete" && 
+                (<FloatButton.Group>
+                    <FloatButton onClick={() => setIsModalOpen(true)} icon={<FaPlus />} type="primary" shape='circle' tooltip={<p>Add values</p>} />
+                    <FloatButton onClick={() => openModalInEditMode()} icon={<AiOutlineEdit />} type="primary" shape='circle' tooltip={<p>Edit values</p>} />
+                </FloatButton.Group>)
+            }
             <Modal 
                 open={isModalOpen} 
                 onCancel={() => setIsModalOpen(false)} // Fixed infinite re-render issue

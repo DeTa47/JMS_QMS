@@ -10,6 +10,7 @@ import MonthlyLogBookForm from "../forms/MonthlyLogBookForm";
 export default function MonthlyLogBook() {
 
     const logbookid = useLocation().state.logbookid;
+    const status = useLocation().state.status;
     const navigate = useNavigate();
 
     console.log('Logbook ID:', logbookid);
@@ -61,11 +62,13 @@ export default function MonthlyLogBook() {
                 rowClassName={() => 'hover-row cursor-pointer'}  
                 onRow={(record) => ({
                     onClick: () => {
-                        navigate('/logbookdata', {state: {logbookid: logbookid, logbookmid: record.logbookmid}});
+                        navigate('/logbookdata', {state: {logbookid: logbookid, logbookmid: record.logbookmid, status: status}});
                         console.log('Row clicked:', record);
                     }})}>
             </Table>
-            <FloatButton onClick={()=>{setIsModalOpen(true)}} type="primary" shape="circle" icon={ <FaPlus/> }></FloatButton>
+            {status !== "obsolete" && (
+                <FloatButton onClick={()=>{setIsModalOpen(true)}} type="primary" shape="circle" icon={ <FaPlus/> }></FloatButton>)
+            }
             <Modal 
                 title="Add Monthly Log Book" 
                 open={isModalOpen} 

@@ -1,5 +1,25 @@
 const db = require('../config/config');
 
+const archivelogbook = async (req, res) =>{
+    try{
+
+        const { logbookid } = req.body;
+
+        const value = "obsolete";
+
+        const query = 'UPDATE logbooks SET status = ? WHERE logbookid = ?';
+
+        const [result] = await db.query(query, [value, logbookid]);
+        console.log('Logbook archived:', result);
+        return res.status(200).json({ message: 'Logbook archived successfully' });
+
+    }catch(error){
+        console.error('Error archiving logbook:', error);
+        res.status(500).json({ error: 'Failed to archive logbook' });
+    }
+}
+
+
 const getLogbooks = async (req, res) => { 
 
     try{
@@ -182,4 +202,4 @@ const createLogBook = async (req, res) => {
     }
 };
 
- module.exports = { getLogbooks, createLogBook, createLogBookById, insertValues, getMonthlyLogbooks, getLogbookdata, updateValues };
+ module.exports = { getLogbooks, createLogBook, createLogBookById, insertValues, getMonthlyLogbooks, getLogbookdata, updateValues, archivelogbook };
